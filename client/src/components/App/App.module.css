@@ -1,0 +1,10 @@
+.mainWrapper {
+  outline: 1px solid black;
+  width: 50%;
+  min-height: 700px;
+}
+
+.listWrapper {
+  margin: 0 auto;
+  text-align: center;
+}

@@ -1,0 +1,31 @@
+.listWrapper {
+  display: inline-block;       
+  width: 80%;                
+  height: 60px;                
+  line-height: 60px;           
+  text-align: center;          
+  background-color: rgb(31, 117, 202);   
+  color: white;                
+  border: 2px solid rgb(31, 117, 202);   
+  text-decoration: none;      
+  border-radius: 5px;         
+  cursor: pointer;            
+  font-family: sans-serif;    
+  font-size: 24px;
+  margin: 3px 0 3px 0;            
+}
+
+.listWrapper:hover{
+  background-color: rgb(61, 134, 207);   
+}
+
+.delete {
+  width: 40px;
+  height: 40px;
+  float: right;
+  margin: 10px;
+}
+
+.delete:hover{
+  background-color: rgb(230, 92, 92);
+}

@@ -1,0 +1,12 @@
+.wrapper {
+  clear: both;
+  text-align: center;
+}
+
+.header {
+  display: block;
+  margin-top: 100px;
+  color: dodgerblue;
+  font-size: 48px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}

@@ -1,0 +1,40 @@
+.formWrapper {
+  clear: both;
+  padding-top: 50px;
+}
+
+.nameWrapper label {
+  font-size: 20px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.nameWrapper input {
+  height: 40px;
+  width: 50%;
+  margin-left: 10px;
+  font-size: 18px;
+  padding-left: 10px;
+}
+
+.nameWrapper input[type="text"]::placeholder {
+  font-size: 18px;
+  font-style: italic;
+  padding-left: 10px;
+  color: rgb(186, 184, 184);
+}
+
+.buttons input {
+  width: 30%;
+  height: 60px;
+  background-Color: dodgerblue;
+  color: white;
+  border: none;
+  font-size: 20px;
+  border-radius: 5px;
+  margin: 10px 5px;
+}
+
+.buttons input:hover {
+  cursor: pointer;
+  background-color: #399AF7;
+}
