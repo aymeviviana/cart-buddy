@@ -1,0 +1,13 @@
+.wrapper {
+  clear: both;
+}
+
+.header {
+  color: dodgerblue;
+  font-size: 48px;
+  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+}
+
+.backButton {
+  display: block;
+}

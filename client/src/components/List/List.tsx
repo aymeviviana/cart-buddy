@@ -1,4 +1,4 @@
-import type { ButtonStyles, ListType } from "../../types/types";
+import type { ButtonStyles, ClickHandler, ListType } from "../../types/types";
 import Items from '../Items/Items';
 import Button from "../Button/Button";
 import Message from "../Message/Message";
@@ -6,9 +6,10 @@ import styles from './List.module.css';
 
 type ListProps = {
   list: ListType | null;
+  onDisplaySearchForm: ClickHandler;
 };
 
-function List({ list }: ListProps) { 
+function List({ list, onDisplaySearchForm }: ListProps) { 
   const buttonStyles: ButtonStyles = {
     margin: "15px 0 15px 0",
     width: "40%",
@@ -19,7 +20,7 @@ function List({ list }: ListProps) {
       <h1 className={styles.header}>{list && list.name}</h1>
 
       <Button
-        onClick={() => console.log("Add Item")}
+        onClick={onDisplaySearchForm}
         buttonStyles={buttonStyles}
       >
         Add Item

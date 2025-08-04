@@ -1,7 +1,7 @@
-import type { AddListHandler, ClickHandler, DisplayListItemsHandler, FormSubmitHandler, TextInputHandler, SetCurrentListHandler, ListType, ErrorMessage, ButtonStyles } from "../../types/types";
+import type { AddListHandler, ClickHandler, DisplayListItemsHandler, TextInputHandler, SetCurrentListHandler, ListType, ErrorMessage, ButtonStyles, SubmitFormEvent } from "../../types/types";
 import Button from "../Button/Button";
 import { useState } from "react";
-import { ENDPOINT } from "../../constants";
+import { LISTS_ENDPOINT } from "../../constants";
 import styles from './NewListForm.module.css';
 
 type NewListFormProps = {
@@ -19,8 +19,8 @@ function NewListForm({
 }: NewListFormProps
 ) { 
   const [newListName, setNewListName] = useState("");
-
-  const handleSubmitNewList: FormSubmitHandler = async (event) => { 
+  
+  async function handleSubmitNewList(event: SubmitFormEvent): Promise<void> { 
     event.preventDefault();
 
     const nextList = {
@@ -29,7 +29,7 @@ function NewListForm({
     };
 
     try {
-      const response: Response = await fetch(ENDPOINT, {
+      const response: Response = await fetch(LISTS_ENDPOINT, {
         method: "POST",
         body: JSON.stringify(nextList),
         headers: {"Content-Type": "application/json; charset=utf-8"},
@@ -52,9 +52,7 @@ function NewListForm({
         console.log(error.message);
       }
     }
-
-    
-  };
+  }
 
   const handleNewListChange: TextInputHandler = (event) => setNewListName(event.target.value);
 

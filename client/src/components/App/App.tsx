@@ -5,20 +5,24 @@ import Lists from '../Lists/Lists';
 import NewListForm from '../NewListForm/NewListForm';
 import List from '../List/List';
 import type { ClickHandler, AddListHandler, ListType, DisplayListItemsHandler, SetCurrentListHandler, ErrorMessage, DeleteListHandler } from '../../types/types';
-import { ENDPOINT } from '../../constants';
+import { LISTS_ENDPOINT } from '../../constants';
 import styles from './App.module.css';
+import SearchForm from '../SearchForm/SearchForm';
 
 function App() {
   const [isNewListForm, setIsNewListForm] = useState(false);
+
   const [isLists, setIsLists] = useState(false);
   const [lists, setLists] = useState<ListType[] | []>([]);
 
   const [isList, setIsList] = useState(false);
   const [list, setList] = useState<ListType | null>(null);
 
-  async function fetchLists() { 
+  const [isSearchForm, setIsSearchForm] = useState(false);
+
+  async function handleGetLists(): Promise<void> { 
     try {
-      const response: Response = await fetch(ENDPOINT);
+      const response: Response = await fetch(LISTS_ENDPOINT);
       const data: ListType[] | [] | ErrorMessage = await response.json();
       
       if (!response.ok && "message" in data) {
@@ -36,31 +40,40 @@ function App() {
   }
 
   useEffect(() => { 
-    fetchLists();
+    handleGetLists();
   }, []);
   
   const handleDisplayNewListForm: ClickHandler = () => { 
     setIsLists(false);
     setIsList(false);
+    setIsSearchForm(false);
     setIsNewListForm(true);
   };
   
   const handleDisplayLists: ClickHandler = () => { 
     setIsNewListForm(false);
     setIsList(false);
+    setIsSearchForm(false);
     setIsLists(true);
+  };
+
+  const handleDisplaySearchForm: ClickHandler = () => { 
+    setIsLists(false);
+    setIsList(false);
+    setIsNewListForm(false);
+    setIsSearchForm(true);
+  }
+
+  const handleDisplayListItems: DisplayListItemsHandler= () => { 
+    setIsNewListForm(false);
+    setIsLists(false);
+    setIsSearchForm(false);
+    setIsList(true);
   };
 
   const handleAddList: AddListHandler = (list) => { 
     const newLists = [...lists, list];
     setLists(newLists);
-  
-  };
-
-  const handleDisplayListItems: DisplayListItemsHandler= () => { 
-    setIsNewListForm(false);
-    setIsLists(false);
-    setIsList(true);
   };
 
   const handleSetCurrentList: SetCurrentListHandler = (list) => { 
@@ -80,7 +93,7 @@ function App() {
       />
     
       <section className={styles.listWrapper}>
-        {!isLists && !isNewListForm && !isList &&
+        {!isLists && !isNewListForm && !isList && !isSearchForm &&
           <Welcome
             onDisplayNewListForm={handleDisplayNewListForm}
             onDisplayLists={handleDisplayLists}
@@ -105,6 +118,12 @@ function App() {
         {isList &&
           <List
             list={list}
+            onDisplaySearchForm={handleDisplaySearchForm}
+          />
+        }
+        {isSearchForm &&
+          <SearchForm
+            onDisplayListItems={handleDisplayListItems}
           />
         }
       </section>  

@@ -1,6 +1,6 @@
 import styles from './ListLink.module.css';
-import type { ListType, DisplayListItemsHandler, SetCurrentListHandler, ListId, ErrorMessage, DeleteListHandler } from '../../types/types';
-import { ENDPOINT } from '../../constants';
+import type { ListType, DisplayListItemsHandler, SetCurrentListHandler, ListId, ErrorMessage, DeleteListHandler, DeleteListEvent } from '../../types/types';
+import { LISTS_ENDPOINT } from '../../constants';
 
 type ListLinkProps = {
   list: ListType;
@@ -16,12 +16,12 @@ function ListLink({ list, onDisplayListItems, onSetCurrentList, onDeleteList }: 
     onDisplayListItems();
   }
 
-  async function handleSubmitDeleteList(event: React.MouseEvent<HTMLImageElement>) {
+  async function handleDeleteList(event: DeleteListEvent): Promise<void> {
     event.preventDefault();
     event.stopPropagation();
 
     try {
-      const response: Response = await fetch(`${ENDPOINT}/${list._id}`, {
+      const response: Response = await fetch(`${LISTS_ENDPOINT}/${list._id}`, {
         method: "DELETE",
       });
 
@@ -53,7 +53,7 @@ function ListLink({ list, onDisplayListItems, onSetCurrentList, onDeleteList }: 
       <img
         className={styles.delete}
         src="./src/assets/trash-can-50.png"
-        onClick={(event) => handleSubmitDeleteList(event)}
+        onClick={(event) => handleDeleteList(event)}
       />
     </li>
   );
