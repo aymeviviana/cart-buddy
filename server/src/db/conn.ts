@@ -1,20 +1,52 @@
-import { Db, MongoClient } from "mongodb";
+import mongoose from "mongoose";
+import dotenv from 'dotenv'
+
+dotenv.config()
 const connectionString: string = process.env.ATLAS_URI || "";
-const client: MongoClient = new MongoClient(connectionString);
 
-let conn: MongoClient | undefined;
-try {
-  conn = await client.connect();
-} catch(e) {
-  console.error(e);
+if (!connectionString) {
+  throw new Error("ATLAS_URI environment variable is required.");
 }
 
-
-let db: Db | undefined;
-if (conn) { 
-  db = conn.db("shop_buddy");
-} else {
-  throw new Error("Failed to connect to the database.");
+export async function connectToDatabase(): Promise<void> {
+  try {
+    await mongoose.connect(connectionString);
+    console.log("✅ Successfully connected to MongoDB with Mongoose");
+  } catch (error) {
+    console.error("❌ Failed to connect to MongoDB:", error);
+    throw new Error(
+      `Database connection failed: ${
+        error instanceof Error ? error.message : "Unknown error"
+      }`
+    );
+  }
 }
 
-export default db;
+export async function closeDatabaseConnection(): Promise<void> {
+  try {
+    await mongoose.disconnect();
+    console.log("🔌 Database connection closed");
+  } catch (error) {
+    console.error("❌ Error closing database connection:", error);
+    throw error;
+  }
+}
+
+export function isConnected(): boolean {
+  return mongoose.connection.readyState === 1;
+}
+
+mongoose.connection.on("connected", () => {
+  console.log("🟢 Mongoose connected to MongoDB");
+});
+
+mongoose.connection.on("error", (error: Error) => {
+  console.error("🔴 Mongoose connection error:", error);
+});
+
+mongoose.connection.on("disconnected", () => {
+  console.log("🟡 Mongoose disconnected from MongoDB");
+});
+
+// For backward compatibility (but prefer connectToDatabase() in new code)
+export default mongoose.connection;

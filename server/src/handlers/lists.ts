@@ -1,95 +1,126 @@
 import { NextFunction, Request, Response } from "express";
-import db from "../db/conn.js";
-import { ObjectId } from "mongodb";
-import { CreateListDto } from "../dtos/CreateList.dto.js";
+import { List, createList as createListModel } from "../models/List.js";
+import {
+  CreateListRequest,
+  ListResponse,
+  listToResponse,
+  listsToResponse,
+} from "../types/api.js";
 import { CustomError } from "../types/customError.js";
+import { listSchema } from "../types/lists.js";
+
 
 export async function getLists(
   request: Request,
   response: Response,
   next: NextFunction
-) { 
-  if (!db) {
-    const error = new Error("Database connection is not available.");
-    return next(error);
-  }
-  
+) {
   try {
-    let collection = db.collection("lists");
-    let results = await collection.find({})
-      .limit(10)
-      .toArray();
-    response.status(200).send(results);
-  } catch (error: unknown) {
-    return next(error); 
+    const lists = await List.find().limit(10);
+    console.log(lists);
+    const responseData = listsToResponse(lists);
+    console.log(responseData);
+    response.status(200).send(responseData);
+  } catch (error) {
+    return next(error);
   }
 }
 
 export async function createList(
-  request: Request<{}, {}, CreateListDto>,
+  request: Request<{}, {}, CreateListRequest>,
   response: Response,
   next: NextFunction
-) { 
-  if (!db) {
-    const error = new Error("Database connection is not available.");
-    return next(error);
-  }
-
-  const name: string = request.body.name.trim();
-
-  if (name.length === 0) { 
-    const error: CustomError = new Error("List name must contain at least one character");
-    error.status = 400;
-    return next(error);
-  }
-
-  const collection = db.collection("lists");
-
+) {
   try {
-    const result = await collection.insertOne(request.body as any);
-    
-    if (!result.acknowledged) { 
-      throw new Error(`List was not created. Please try again.`);
+    // zod runtime type validation
+    const parsedListBody = listSchema.safeParse(request.body);
+    if (!parsedListBody.success) {
+      const error: CustomError = new Error(parsedListBody.error.message);
+      error.status = 400;
+      return next(error);
     }
 
-    const listId = result.insertedId;
-    const query = { _id: listId };
-    const newList = await collection.findOne(query); 
+    // typescript compile time validation
+    const newList = createListModel(
+      parsedListBody.data.name,
+      parsedListBody.data.items
+    );
     
-    if (!newList) { 
-      throw new Error(`List not found. Please try again.`);
-    }
-
-    response.status(201).send(newList);
-  } catch (error: unknown) {
+    await newList.save();
+    const responseData = listToResponse(newList);
+    response.status(201).send(responseData);
+  } catch (error) {
     return next(error);
   }
 }
 
 export async function deleteList(
-  request: Request<{listId: string}>,
+  request: Request<{ listId: string }>,
   response: Response,
   next: NextFunction
-) { 
-  if (!db) {
-    const error = new Error("Database connection is not available.");
-    return next(error);
-  }
-
-  const id: string = request.params.listId;
-  const query = { _id: new ObjectId(id) };
-  const collection = db.collection("lists");
-  
+) {
   try {
-    const result = await collection.deleteOne(query);
+    const { listId } = request.params;
+    const deletedList = await List.findByIdAndDelete(listId);
 
-    if (result.deletedCount === 0) {
-      const error: CustomError = new Error("List was not found. Please try again.");
+    if (!deletedList) {
+      const error: CustomError = new Error(
+        "List was not found. Please try again."
+      );
       error.status = 404;
       throw error;
     }
 
-    response.status(200).send({ _id: id});  
+    response.status(200).send({ _id: listId });
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function getListById(
+  request: Request<{ listId: string }>,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const { listId } = request.params;
+    const list = await List.findById(listId);
+
+    if (!list) {
+      const error: CustomError = new Error("List not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const responseData = listToResponse(list);
+    response.status(200).send(responseData);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+export async function updateList(
+  request: Request<{ listId: string }, {}, { name?: string; items?: any[] }>,
+  response: Response,
+  next: NextFunction
+) {
+  try {
+    const { listId } = request.params;
+    const updates = request.body;
+    const updatedList = await List.findByIdAndUpdate(
+      listId,
+      updates,
+      { new: true, runValidators: true } // Return updated doc and run validation
+    );
+
+    if (!updatedList) {
+      const error: CustomError = new Error("List not found");
+      error.status = 404;
+      throw error;
+    }
+
+    const responseData = listToResponse(updatedList);
+    response.status(200).send(responseData);
   } catch (error) {
     return next(error);
   }

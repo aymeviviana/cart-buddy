@@ -1,7 +1,7 @@
 import type { AddListHandler, ClickHandler, DisplayListItemsHandler, TextInputHandler, SetCurrentListHandler, ListType, ErrorMessage, ButtonStyles, SubmitFormEvent } from "../../types/types";
 import Button from "../Button/Button";
 import { useState } from "react";
-import { LISTS_ENDPOINT } from "../../constants";
+import { apiUrlLists } from "../../constants";
 import styles from './NewListForm.module.css';
 
 type NewListFormProps = {
@@ -29,7 +29,7 @@ function NewListForm({
     };
 
     try {
-      const response: Response = await fetch(LISTS_ENDPOINT, {
+      const response: Response = await fetch(apiUrlLists, {
         method: "POST",
         body: JSON.stringify(nextList),
         headers: {"Content-Type": "application/json; charset=utf-8"},

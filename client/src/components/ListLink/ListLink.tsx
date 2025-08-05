@@ -1,6 +1,6 @@
 import styles from './ListLink.module.css';
 import type { ListType, DisplayListItemsHandler, SetCurrentListHandler, ListId, ErrorMessage, DeleteListHandler, DeleteListEvent } from '../../types/types';
-import { LISTS_ENDPOINT } from '../../constants';
+import { apiUrlLists } from '../../constants';
 
 type ListLinkProps = {
   list: ListType;
@@ -21,7 +21,7 @@ function ListLink({ list, onDisplayListItems, onSetCurrentList, onDeleteList }: 
     event.stopPropagation();
 
     try {
-      const response: Response = await fetch(`${LISTS_ENDPOINT}/${list._id}`, {
+      const response: Response = await fetch(`${apiUrlLists}/${list._id}`, {
         method: "DELETE",
       });
 

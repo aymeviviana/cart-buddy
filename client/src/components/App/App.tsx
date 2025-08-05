@@ -5,7 +5,7 @@ import Lists from '../Lists/Lists';
 import NewListForm from '../NewListForm/NewListForm';
 import List from '../List/List';
 import type { ClickHandler, AddListHandler, ListType, DisplayListItemsHandler, SetCurrentListHandler, ErrorMessage, DeleteListHandler } from '../../types/types';
-import { LISTS_ENDPOINT } from '../../constants';
+import { apiUrlLists } from '../../constants';
 import styles from './App.module.css';
 import SearchForm from '../SearchForm/SearchForm';
 
@@ -22,7 +22,7 @@ function App() {
 
   async function handleGetLists(): Promise<void> { 
     try {
-      const response: Response = await fetch(LISTS_ENDPOINT);
+      const response: Response = await fetch(apiUrlLists);
       const data: ListType[] | [] | ErrorMessage = await response.json();
       
       if (!response.ok && "message" in data) {

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { DisplayListItemsHandler, ErrorMessage, Item, SubmitFormEvent } from '../../types/types';
 import styles from './SearchForm.module.css';
 import Results from '../Results/Results';
-import { SEARCH_ENDPOINT } from '../../constants';
+import { apiUrlSearch } from '../../constants';
 
 
 type SearchFormProps = {
@@ -35,7 +35,7 @@ function SearchForm({ onDisplayListItems }: SearchFormProps) {
     event.preventDefault();
 
     try {
-      const response: Response = await fetch(`${SEARCH_ENDPOINT}/${query}`);
+      const response: Response = await fetch(`${apiUrlSearch}/${query}`);
       const data: Item[] | [] | ErrorMessage = await response.json();
 
       if (!response.ok && "message" in data) { 

@@ -9,6 +9,8 @@ export interface ListType {
   _id: string; 
   name: string;
   items: Item[] | [];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ErrorMessage { 
