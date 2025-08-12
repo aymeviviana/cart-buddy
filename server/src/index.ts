@@ -1,4 +1,4 @@
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 dotenv.config();
 
 import express from "express";
@@ -6,6 +6,7 @@ import cors from "cors";
 import { connectToDatabase, closeDatabaseConnection } from "./db/conn.js";
 import errorHandler from "./middleware/errorHandler.js";
 import listsRouter from "./routes/lists.js";
+import searchRouter from "./routes/search.js";
 
 const app = express();
 const port = process.env.PORT || 8000;
@@ -22,8 +23,9 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/v1/lists", listsRouter);
+app.use("/api/v1/search", searchRouter);
 
-app.all('{*splat}', (req, res) => {
+app.all("{*splat}", (req, res) => {
   res.status(404).json({
     error: "Route not found",
     path: req.originalUrl,
@@ -46,7 +48,6 @@ async function startServer() {
     process.exit(1);
   }
 }
-
 
 async function gracefulShutdown(signal: string) {
   console.log(`\n🛑 Received ${signal}. Starting graceful shutdown...`);

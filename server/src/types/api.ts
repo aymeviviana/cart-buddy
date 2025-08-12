@@ -1,5 +1,10 @@
 import { IItem } from "../models/List.js";
 
+// API output type - Error Response Message
+export interface ErrorResponseMessage {
+  error: string;
+}
+
 // API input type - what the client sends
 export interface CreateListRequest {
   name: string;
