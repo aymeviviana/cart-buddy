@@ -17,9 +17,7 @@ export async function getLists(
 ) {
   try {
     const lists = await List.find().limit(10);
-    console.log(lists);
     const responseData = listsToResponse(lists);
-    console.log(responseData);
     response.status(200).send(responseData);
   } catch (error) {
     return next(error);

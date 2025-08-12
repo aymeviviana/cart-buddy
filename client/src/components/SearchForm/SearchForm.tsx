@@ -3,36 +3,31 @@ import type { DisplayListItemsHandler, ErrorMessage, Item, SubmitFormEvent } fro
 import styles from './SearchForm.module.css';
 import Results from '../Results/Results';
 import { apiUrlSearch } from '../../constants';
+import Message from '../Message/Message';
 
 
 type SearchFormProps = {
   onDisplayListItems: DisplayListItemsHandler;
 };
 
-const data: Item[] = [
-  {
-    barcode: "AAA",
-    name: "Oat Milk",
-    brand: "Oatly"
-  }, 
-  {
-    barcode: "BBB",
-    name: "Penne Pasta",
-    brand: "Barilla"
-  }, 
-  {
-    barcode: "CCC",
-    name: "Crunchy Peanut Butter",
-    brand: "Jiff"
-  },
-];
-
 function SearchForm({ onDisplayListItems }: SearchFormProps) { 
   const [query, setQuery] = useState<string>("");
-  const [results, setResults] = useState<Item[] | []>(data);
+  const [results, setResults] = useState<Item[] | []>([]);
+  const [loadingStatus, setLoadingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const isValidQuery = (query: string): boolean => query.trim().length > 0;
   
   async function handleSubmitSearch(event: SubmitFormEvent): Promise<void> {
     event.preventDefault();
+
+    if (!isValidQuery(query)) { 
+      setLoadingStatus('error');
+      setErrorMessage('Please make sure your search contains at least one character.');
+      return;
+    }
+    
+    setLoadingStatus('loading');
 
     try {
       const response: Response = await fetch(`${apiUrlSearch}/${query}`);
@@ -43,11 +38,13 @@ function SearchForm({ onDisplayListItems }: SearchFormProps) {
       }
 
       if (Array.isArray(data)) { 
+        setLoadingStatus('success');
         setResults(data);
       }
     } catch (error: unknown) {
       if (error instanceof Error) { 
-        console.log(error.message);
+        setLoadingStatus('error');
+        setErrorMessage(error.message);
       }
     }
   };
@@ -75,9 +72,27 @@ function SearchForm({ onDisplayListItems }: SearchFormProps) {
         />
       </form>
 
-      {results.length > 0 &&
+      {loadingStatus === 'idle' &&
+        <Message
+          message={'Type an item name and click search =)'}
+        />
+      }
+
+      {loadingStatus === 'loading' &&
+        <Message
+          message={'Searching....'}
+        />
+      }
+
+      {loadingStatus === 'success' &&
         <Results
           results={results}
+        />
+      }
+
+      {loadingStatus === 'error' && 
+        <Message
+          message={errorMessage}
         />
       }
     </div>

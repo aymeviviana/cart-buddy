@@ -13,7 +13,6 @@ function Results({ results }: ResultsProps) {
         {results.map(({ barcode, name, brand}) => (
           <Result
             key={barcode}
-            barcode={barcode}
             name={name}
             brand={brand}
           />
