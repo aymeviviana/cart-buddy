@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { List, createList as createListModel } from "../models/List.js";
+import { List, IItem, createList as createListModel } from "../models/List.js";
 import {
   CreateListRequest,
   ListResponse,
@@ -8,7 +8,6 @@ import {
 } from "../types/api.js";
 import { CustomError } from "../types/customError.js";
 import { listSchema } from "../types/lists.js";
-
 
 export async function getLists(
   request: Request,
@@ -43,7 +42,7 @@ export async function createList(
       parsedListBody.data.name,
       parsedListBody.data.items
     );
-    
+
     await newList.save();
     const responseData = listToResponse(newList);
     response.status(201).send(responseData);
@@ -75,39 +74,17 @@ export async function deleteList(
   }
 }
 
-export async function getListById(
-  request: Request<{ listId: string }>,
+export async function createItem(
+  request: Request<{ listId: string }, {}, IItem>,
   response: Response,
   next: NextFunction
 ) {
   try {
     const { listId } = request.params;
-    const list = await List.findById(listId);
-
-    if (!list) {
-      const error: CustomError = new Error("List not found");
-      error.status = 404;
-      throw error;
-    }
-
-    const responseData = listToResponse(list);
-    response.status(200).send(responseData);
-  } catch (error) {
-    return next(error);
-  }
-}
-
-export async function updateList(
-  request: Request<{ listId: string }, {}, { name?: string; items?: any[] }>,
-  response: Response,
-  next: NextFunction
-) {
-  try {
-    const { listId } = request.params;
-    const updates = request.body;
+    const newItem = request.body;
     const updatedList = await List.findByIdAndUpdate(
       listId,
-      updates,
+      { $push: { items: newItem } },
       { new: true, runValidators: true } // Return updated doc and run validation
     );
 
@@ -123,3 +100,53 @@ export async function updateList(
     return next(error);
   }
 }
+
+export async function deleteItem(
+  request: Request<{ listId: string; barcode: string }>,
+  response: Response,
+  next: NextFunction
+) {
+  const listId = request.params.listId;
+  const itemBarcode = request.params.barcode;
+
+  try {
+    const updatedList = await List.findByIdAndUpdate(
+      listId,
+      { $pull: { items: { barcode: itemBarcode } } },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedList) {
+      const error: CustomError = new Error("List not founde");
+      error.status = 404;
+      throw error;
+    }
+
+    const responseData = listToResponse(updatedList);
+    response.status(201).send(responseData);
+  } catch (error) {
+    return next(error);
+  }
+}
+
+// export async function getListById(
+//   request: Request<{ listId: string }>,
+//   response: Response,
+//   next: NextFunction
+// ) {
+//   try {
+//     const { listId } = request.params;
+//     const list = await List.findById(listId);
+
+//     if (!list) {
+//       const error: CustomError = new Error("List not found");
+//       error.status = 404;
+//       throw error;
+//     }
+
+//     const responseData = listToResponse(list);
+//     response.status(200).send(responseData);
+//   } catch (error) {
+//     return next(error);
+//   }
+// }

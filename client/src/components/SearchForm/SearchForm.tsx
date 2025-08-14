@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { DisplayListItemsHandler, ErrorMessage, Item, SubmitFormEvent } from '../../types/types';
+import type { DisplayListItemsHandler, ErrorMessage, Item, ListType, SetCurrentListHandler, SubmitFormEvent, UpdateListsHandler } from '../../types/types';
 import styles from './SearchForm.module.css';
 import Results from '../Results/Results';
 import { apiUrlSearch } from '../../constants';
@@ -8,9 +8,12 @@ import Message from '../Message/Message';
 
 type SearchFormProps = {
   onDisplayListItems: DisplayListItemsHandler;
+  list: ListType | null;
+  onUpdateLists: UpdateListsHandler;
+  onSetCurrentList: SetCurrentListHandler;
 };
 
-function SearchForm({ onDisplayListItems }: SearchFormProps) { 
+function SearchForm({ onDisplayListItems, list, onUpdateLists, onSetCurrentList }: SearchFormProps) { 
   const [query, setQuery] = useState<string>("");
   const [results, setResults] = useState<Item[] | []>([]);
   const [loadingStatus, setLoadingStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
@@ -87,6 +90,10 @@ function SearchForm({ onDisplayListItems }: SearchFormProps) {
       {loadingStatus === 'success' &&
         <Results
           results={results}
+          list={list}
+          onDisplayListItems={onDisplayListItems}
+          onUpdateLists={onUpdateLists}
+          onSetCurrentList={onSetCurrentList}
         />
       }
 
