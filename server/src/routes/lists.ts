@@ -3,8 +3,8 @@ import {
   deleteList,
   getLists,
   createList,
-  getListById,
-  updateList,
+  createItem,
+  deleteItem,
 } from "../handlers/lists.js";
 
 const router = Router();
@@ -15,7 +15,10 @@ router.post("/", createList);
 
 router.delete("/:listId", deleteList);
 
+router.post("/:listId/items", createItem);
+
+router.delete("/:listId/items/:barcode", deleteItem);
+
 // router.get("/:listId", getListById);
-// router.put("/:listId", updateList);
 
 export default router;

@@ -4,7 +4,7 @@ import Welcome from '../Welcome/Welcome';
 import Lists from '../Lists/Lists';
 import NewListForm from '../NewListForm/NewListForm';
 import List from '../List/List';
-import type { ClickHandler, AddListHandler, ListType, DisplayListItemsHandler, SetCurrentListHandler, ErrorMessage, DeleteListHandler } from '../../types/types';
+import type { ClickHandler, AddListHandler, ListType, DisplayListItemsHandler, SetCurrentListHandler, ErrorMessage, DeleteListHandler, UpdateListsHandler } from '../../types/types';
 import { apiUrlLists } from '../../constants';
 import styles from './App.module.css';
 import SearchForm from '../SearchForm/SearchForm';
@@ -76,6 +76,12 @@ function App() {
     setLists(newLists);
   };
 
+  const handleUpdateLists: UpdateListsHandler = (updatedList) => { 
+    const filteredLists = lists.filter(list => list._id !== updatedList._id);
+    const newLists = [updatedList, ...filteredLists];
+    setLists(newLists);
+  }
+
   const handleSetCurrentList: SetCurrentListHandler = (list) => { 
     setList(list);
   };
@@ -119,11 +125,17 @@ function App() {
           <List
             list={list}
             onDisplaySearchForm={handleDisplaySearchForm}
+            onDisplayListItems={handleDisplayListItems}
+            onUpdateLists={handleUpdateLists}
+            onSetCurrentList={handleSetCurrentList}
           />
         }
         {isSearchForm &&
           <SearchForm
+            list={list}
             onDisplayListItems={handleDisplayListItems}
+            onUpdateLists={handleUpdateLists}
+            onSetCurrentList={handleSetCurrentList}
           />
         }
       </section>  

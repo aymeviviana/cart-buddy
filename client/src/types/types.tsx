@@ -32,8 +32,9 @@ export type TextInputHandler = (event: React.ChangeEvent<HTMLInputElement>) => v
 export type DisplayListItemsHandler = () => void;
 export type SetCurrentListHandler = (list: ListType) => void;
 export type DeleteListHandler = (listId: string) => void;
+export type UpdateListsHandler = (updatedList: ListType) => void;
 
 
 // Event Types
 export interface SubmitFormEvent extends React.FormEvent<HTMLFormElement> { };
-export interface DeleteListEvent extends React.MouseEvent<HTMLImageElement, MouseEvent> {}
+export interface DeleteListEvent extends React.MouseEvent<HTMLImageElement, MouseEvent> { }

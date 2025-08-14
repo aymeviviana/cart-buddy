@@ -1,9 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 import { NextFunction, Request, Response } from "express";
-import { IItem } from "../models/List.js";
 import { CHOMP_API_BRANDED_ITEMS_BY_NAME } from "../constants.js";
-import { ErrorResponseMessage } from "../types/api.js";
 import { LIMIT } from "../constants.js";
 import { CustomError } from "../types/customError.js";
 
@@ -23,7 +21,7 @@ import { CustomError } from "../types/customError.js";
 //     brand: "Jiff",
 //   },
 // ];
-const API_KEY = process.env.API_KEY || "ABC";
+const API_KEY = process.env.API_KEY || "";
 
 function formatItems(data) {
   return data.items.map(({ barcode, name, brand }) => ({
@@ -34,23 +32,28 @@ function formatItems(data) {
 }
 
 function getErrorMessage(status: number): string {
+  let errorMessage: string | undefined;
+
   switch (status) {
     case 400:
-      return "Invalid request. Please try again.";
+      errorMessage = "Invalid request. Please try again.";
       break;
     case 401:
-      return "Please wait a few seconds and then try again!";
+      errorMessage = "Please wait a few seconds and then try again!";
       break;
     case 404:
-      return "Sorry! No food items were found. Please try a new search.";
+      errorMessage =
+        "Sorry! No food items were found. Please try a new search.";
       break;
     case 500:
-      return "Oops! Server error. Please try again.";
+      errorMessage = "Oops! Server error. Please try again.";
       break;
     default:
-      return "Encountered an error. Please try again.";
+      errorMessage = "Encountered an error. Please try again.";
       break;
   }
+
+  return errorMessage;
 }
 
 async function getItems(query: string, response: Response, next: NextFunction) {
